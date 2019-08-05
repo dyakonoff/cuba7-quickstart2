@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        caption="msg://editorCaption"
+        focusComponent="form"
+        messagesPack="com.company.stockman.web.screens.product">
+    <data>
+        <instance id="productDc"
+                  class="com.company.stockman.entity.Product"
+                  view="_local">
+            <loader/>
+        </instance>
+    </data>
+    <dialogMode height="auto"
+                width="auto" forceDialog="true"/>
+    <layout expand="editActions" spacing="true">
+        <form id="form" dataContainer="productDc">
+            <column width="250px">
+                <textField id="nameField" property="name"/>
+                <textField id="priceField" property="price"/>
+                <textArea id="descriptionField" property="description" rows="5"/>
+            </column>
+        </form>
+        <hbox id="editActions" spacing="true">
+            <button action="windowCommitAndClose"/>
+            <button action="windowClose"/>
+        </hbox>
+    </layout>
+</window>
