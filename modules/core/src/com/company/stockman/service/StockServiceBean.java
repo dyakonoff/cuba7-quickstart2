@@ -3,14 +3,11 @@ package com.company.stockman.service;
 import com.company.stockman.entity.Product;
 import com.company.stockman.entity.StockChangeType;
 import com.company.stockman.entity.StockItem;
-import com.haulmont.cuba.core.entity.contracts.Id;
 import com.haulmont.cuba.core.global.DataManager;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service(StockService.NAME)
 public class StockServiceBean implements StockService {
@@ -19,31 +16,29 @@ public class StockServiceBean implements StockService {
     private DataManager dataManager;
 
     @Override
-    public BigDecimal checkStockAvailability(Id<Product, UUID> productId) {
-        Optional<StockItem> stockItem = dataManager
-                .load(StockItem.class)
-                .query("select e from stockman_StockItem e where e.product.id = :productId")
-                .parameter("productId", productId)
-                .optional();
-
-        return stockItem.map(StockItem::getQuantity).orElse(BigDecimal.ZERO);
+    public BigDecimal checkStockAvailability(Product product) {
+        Product reloadedProduct = dataManager.reload(product, "product-with-stock");
+        if (reloadedProduct.getStock() != null) {
+            return reloadedProduct.getStock().getQuantity();
+        } else {
+            return BigDecimal.ZERO;
+        }
     }
 
     @Override
-    public void changeStock(Id<Product, UUID> productId, StockChangeType changeType, BigDecimal quantity) {
-        StockItem stockItem = dataManager
-                .load(StockItem.class)
-                .query("select e from stockman_StockItem e where e.product.id = :productId")
-                .parameter("productId", productId)
-                .optional()
-                .orElseGet(() -> {
-                    StockItem newStockItem = dataManager.create(StockItem.class);
-                    newStockItem.setProduct(dataManager.getReference(productId));
-                    return newStockItem;
-                });
+    public void changeStock(Product product, StockChangeType changeType, BigDecimal quantity) {
         BigDecimal difference = StockChangeType.DEDUCT.equals(changeType) ? quantity.negate() : quantity;
-        stockItem.setQuantity(stockItem.getQuantity().add(difference));
+        Product reloadedProduct = dataManager.reload(product, "product-with-stock");
 
-        dataManager.commit(stockItem);
+        if (reloadedProduct.getStock() == null) {
+            StockItem stockItem = dataManager.create(StockItem.class);
+            stockItem.setQuantity(stockItem.getQuantity().add(difference));
+            stockItem.setProduct(reloadedProduct);
+            dataManager.commit(stockItem);
+        } else {
+            StockItem stockItem = reloadedProduct.getStock();
+            stockItem.setQuantity(stockItem.getQuantity().add(difference));
+            dataManager.commit(stockItem);
+        }
     }
 }

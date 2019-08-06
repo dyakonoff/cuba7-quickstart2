@@ -4,4 +4,9 @@
     <view entity="stockman_StockItem" name="stockItem-view" extends="_local">
         <property name="product" view="_minimal"/>
     </view>
+    <view entity="stockman_Product" name="product-with-stock" extends="_local">
+        <property name="stock" view="_minimal">
+            <property name="quantity"/>
+        </property>
+    </view>
 </views>

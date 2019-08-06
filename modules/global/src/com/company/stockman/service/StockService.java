@@ -10,7 +10,7 @@ import java.util.UUID;
 public interface StockService {
     String NAME = "stockman_StockService";
 
-    BigDecimal checkStockAvailability(Id<Product, UUID> productId);
+    BigDecimal checkStockAvailability(Product product);
 
-    void changeStock(Id<Product, UUID> productId, StockChangeType changeType, BigDecimal quantity);
+    void changeStock(Product product, StockChangeType changeType, BigDecimal quantity);
 }

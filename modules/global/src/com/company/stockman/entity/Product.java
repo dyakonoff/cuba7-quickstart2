@@ -5,7 +5,9 @@ import com.haulmont.cuba.core.entity.StandardEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Lob;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -27,6 +29,17 @@ public class Product extends StandardEntity {
     @Lob
     @Column(name = "DESCRIPTION")
     protected String description;
+
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "product")
+    protected StockItem stock;
+
+    public StockItem getStock() {
+        return stock;
+    }
+
+    public void setStock(StockItem stock) {
+        this.stock = stock;
+    }
 
     public String getDescription() {
         return description;

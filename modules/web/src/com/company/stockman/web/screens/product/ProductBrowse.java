@@ -38,7 +38,7 @@ public class ProductBrowse extends StandardLookup<Product> {
 
     @Install(to = "productsTable.available", subject = "columnGenerator")
     private Component productsTableAvailableColumnGenerator(Product product) {
-        return new Table.PlainTextCell(stockService.checkStockAvailability(Id.of(product)).toString());
+        return new Table.PlainTextCell(stockService.checkStockAvailability(product).toString());
     }
 
     @Subscribe("changeStockBtn")
@@ -61,7 +61,7 @@ public class ProductBrowse extends StandardLookup<Product> {
                     }
                     if (op == StockChangeType.DEDUCT) {
                         Product product = context.getValue("product");
-                        BigDecimal inStockCount = stockService.checkStockAvailability(Id.of(product));
+                        BigDecimal inStockCount = stockService.checkStockAvailability(product);
                         if (inStockCount.compareTo(BigDecimal.ZERO) <= 0 || inStockCount.compareTo(quantity) < 0) {
                             return ValidationErrors.of("Not enough items in stock");
                         }
@@ -76,7 +76,7 @@ public class ProductBrowse extends StandardLookup<Product> {
                     Product product = result.getValue("product");
                     StockChangeType changeType = result.getValue("operation");
 
-                    stockService.changeStock(Id.of(product), changeType, quantity);
+                    stockService.changeStock(product, changeType, quantity);
                     productsTable.repaint();
                 })
                 .show();
