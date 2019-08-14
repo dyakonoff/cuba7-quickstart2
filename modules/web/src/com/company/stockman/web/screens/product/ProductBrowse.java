@@ -4,6 +4,7 @@ import com.company.stockman.entity.Product;
 import com.company.stockman.entity.StockChangeType;
 import com.company.stockman.service.StockService;
 import com.haulmont.cuba.gui.Dialogs;
+import com.haulmont.cuba.gui.Fragments;
 import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.app.core.inputdialog.DialogActions;
 import com.haulmont.cuba.gui.app.core.inputdialog.InputDialog;
@@ -33,26 +34,12 @@ public class ProductBrowse extends StandardLookup<Product> {
     private CollectionLoader<Product> productsDl;
     @Inject
     private UiComponents uiComponents;
+    @Inject
+    private Fragments fragments;
 
     @Install(to = "productsTable.available", subject = "columnGenerator")
     private Component productsTableAvailableColumnGenerator(Product product) {
-        // Table.PlainTextCell cell = new Table.PlainTextCell(product.getStock().getQuantity().toString());
-
-        HBoxLayout hBox = uiComponents.create(HBoxLayout.class);
-        hBox.setWidthFull();
-
-        Label<BigDecimal> lblValue = uiComponents.create(Label.class);
-        lblValue.setValue(product.getStock().getQuantity());
-
-        Button btnAdd = uiComponents.create(Button.class);
-        btnAdd.setIcon("PLUS");
-
-        Button btnRemove = uiComponents.create(Button.class);
-        btnRemove.setIcon("MINUS");
-
-        hBox.add(lblValue, btnAdd, btnRemove);
-
-        return hBox;
+         return new Table.PlainTextCell(product.getStock().getQuantity().toString());
     }
 
     @Subscribe("changeStockBtn")
