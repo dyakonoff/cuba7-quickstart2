@@ -6,7 +6,7 @@
     <data readOnly="true">
         <collection id="productsDc"
                     class="com.company.stockman.entity.Product"
-                    view="_local">
+                    view="product-with-stock">
             <loader id="productsDl">
                 <query>
                     <![CDATA[select e from stockman_Product e]]>

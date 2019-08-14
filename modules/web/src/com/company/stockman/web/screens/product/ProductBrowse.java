@@ -3,23 +3,19 @@ package com.company.stockman.web.screens.product;
 import com.company.stockman.entity.Product;
 import com.company.stockman.entity.StockChangeType;
 import com.company.stockman.service.StockService;
-import com.haulmont.cuba.core.entity.contracts.Id;
 import com.haulmont.cuba.gui.Dialogs;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.app.core.inputdialog.DialogActions;
 import com.haulmont.cuba.gui.app.core.inputdialog.InputDialog;
 import com.haulmont.cuba.gui.app.core.inputdialog.InputParameter;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.gui.screen.LookupComponent;
 import com.haulmont.cuba.gui.screen.*;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
-
-
-/**
- * Created by Aleksey Stukalov on 2019-06-19.
- */
 
 @UiController("stockman_Product.browse")
 @UiDescriptor("product-browse.xml")
@@ -34,11 +30,29 @@ public class ProductBrowse extends StandardLookup<Product> {
     @Inject
     private CollectionContainer<Product> productsDc;
     @Inject
-    private GroupTable<Product> productsTable;
+    private CollectionLoader<Product> productsDl;
+    @Inject
+    private UiComponents uiComponents;
 
     @Install(to = "productsTable.available", subject = "columnGenerator")
     private Component productsTableAvailableColumnGenerator(Product product) {
-        return new Table.PlainTextCell(stockService.checkStockAvailability(product).toString());
+        // Table.PlainTextCell cell = new Table.PlainTextCell(product.getStock().getQuantity().toString());
+
+        HBoxLayout hBox = uiComponents.create(HBoxLayout.class);
+        hBox.setWidthFull();
+
+        Label<BigDecimal> lblValue = uiComponents.create(Label.class);
+        lblValue.setValue(product.getStock().getQuantity());
+
+        Button btnAdd = uiComponents.create(Button.class);
+        btnAdd.setIcon("PLUS");
+
+        Button btnRemove = uiComponents.create(Button.class);
+        btnRemove.setIcon("MINUS");
+
+        hBox.add(lblValue, btnAdd, btnRemove);
+
+        return hBox;
     }
 
     @Subscribe("changeStockBtn")
@@ -61,7 +75,7 @@ public class ProductBrowse extends StandardLookup<Product> {
                     }
                     if (op == StockChangeType.DEDUCT) {
                         Product product = context.getValue("product");
-                        BigDecimal inStockCount = stockService.checkStockAvailability(product);
+                        BigDecimal inStockCount = product.getStock().getQuantity();
                         if (inStockCount.compareTo(BigDecimal.ZERO) <= 0 || inStockCount.compareTo(quantity) < 0) {
                             return ValidationErrors.of("Not enough items in stock");
                         }
@@ -77,7 +91,7 @@ public class ProductBrowse extends StandardLookup<Product> {
                     StockChangeType changeType = result.getValue("operation");
 
                     stockService.changeStock(product, changeType, quantity);
-                    productsTable.repaint();
+                    productsDl.load();
                 })
                 .show();
     }

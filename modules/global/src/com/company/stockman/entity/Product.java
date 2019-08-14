@@ -2,7 +2,12 @@ package com.company.stockman.entity;
 
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.OnDelete;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.DeletePolicy;
+import com.haulmont.cuba.core.global.Metadata;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -30,6 +35,7 @@ public class Product extends StandardEntity {
     @Column(name = "DESCRIPTION")
     protected String description;
 
+    @OnDelete(DeletePolicy.CASCADE)
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "product")
     protected StockItem stock;
 
@@ -63,5 +69,12 @@ public class Product extends StandardEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @PostConstruct
+    public void postConstruct() {
+        StockItem stockItem = AppBeans.get(Metadata.class).create(StockItem.class);
+        stockItem.setProduct(this);
+        setStock(stockItem);
     }
 }

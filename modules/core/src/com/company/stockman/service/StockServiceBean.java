@@ -16,29 +16,11 @@ public class StockServiceBean implements StockService {
     private DataManager dataManager;
 
     @Override
-    public BigDecimal checkStockAvailability(Product product) {
-        Product reloadedProduct = dataManager.reload(product, "product-with-stock");
-        if (reloadedProduct.getStock() != null) {
-            return reloadedProduct.getStock().getQuantity();
-        } else {
-            return BigDecimal.ZERO;
-        }
-    }
-
-    @Override
     public void changeStock(Product product, StockChangeType changeType, BigDecimal quantity) {
         BigDecimal difference = StockChangeType.DEDUCT.equals(changeType) ? quantity.negate() : quantity;
         Product reloadedProduct = dataManager.reload(product, "product-with-stock");
-
-        if (reloadedProduct.getStock() == null) {
-            StockItem stockItem = dataManager.create(StockItem.class);
-            stockItem.setQuantity(stockItem.getQuantity().add(difference));
-            stockItem.setProduct(reloadedProduct);
-            dataManager.commit(stockItem);
-        } else {
-            StockItem stockItem = reloadedProduct.getStock();
-            stockItem.setQuantity(stockItem.getQuantity().add(difference));
-            dataManager.commit(stockItem);
-        }
+        StockItem stockItem = reloadedProduct.getStock();
+        stockItem.setQuantity(stockItem.getQuantity().add(difference));
+        dataManager.commit(stockItem);
     }
 }
