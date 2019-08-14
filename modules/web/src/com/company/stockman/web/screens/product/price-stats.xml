@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        caption="msg://caption"
+        messagesPack="com.company.stockman.web.screens.product"
+        xmlns:chart="http://schemas.haulmont.com/charts/charts.xsd">
+    <data>
+        <collection id="productsDc" class="com.company.stockman.entity.Product" view="product-with-stock">
+            <loader id="productsDl">
+                <query>select p from stockman_Product p</query>
+            </loader>
+        </collection>
+    </data>
+    <layout>
+        <chart:xyChart id="priceStatsChart"
+                       width="100%"
+                       height="100%"
+                       dataContainer="productsDc"
+                       autoMarginOffset="20"
+                       marginBottom="60"
+                       marginLeft="64"
+                       startDuration="1"
+                       theme="LIGHT">
+            <chart:chartCursor/>
+            <chart:chartScrollbar/>
+            <chart:graphs>
+                <chart:graph balloonText="price:[[x]], In stock:[[y]]"
+                             bullet="ROUND"
+                             lineAlpha="0"
+                             xField="price"
+                             yField="stock.quantity" title="[[name]]"/>
+            </chart:graphs>
+            <chart:valueAxes>
+                <chart:axis id="x" axisAlpha="0" dashLength="1" position="BOTTOM" title="Price"/>
+                <chart:axis id="y" axisAlpha="0" dashLength="1" position="LEFT" title="In Stock"/>
+            </chart:valueAxes>
+
+        </chart:xyChart>
+    </layout>
+</window>

@@ -2,5 +2,6 @@
 <menu-config xmlns="http://schemas.haulmont.com/cuba/menu.xsd">
     <menu id="application-stockman" insertBefore="administration">
         <item screen="stockman_Product.browse"/>
+        <item screen="stockman_PriceStats"/>
     </menu>
 </menu-config>
