@@ -1,12 +1,15 @@
 package com.company.stockman.service;
 
-import com.company.stockman.entity.Product;
 import com.company.stockman.entity.StockChangeType;
+import org.springframework.validation.annotation.Validated;
 
-import java.math.BigDecimal;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
+import java.util.UUID;
 
 public interface StockService {
     String NAME = "stockman_StockService";
 
-    void changeStock(Product product, StockChangeType changeType, BigDecimal quantity);
+    @Validated
+    void changeStock(@NotNull UUID stockId, StockChangeType changeType, @PositiveOrZero int quantity);
 }

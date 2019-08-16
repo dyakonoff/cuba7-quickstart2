@@ -4,8 +4,8 @@ import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.DeletePolicy;
-import com.haulmont.cuba.core.global.Metadata;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.Column;
@@ -15,6 +15,7 @@ import javax.persistence.Lob;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 import java.math.BigDecimal;
 
 @NamePattern("%s|name")
@@ -27,6 +28,7 @@ public class Product extends StandardEntity {
     @Column(name = "NAME", nullable = false)
     protected String name;
 
+    @PositiveOrZero(message = "Price should be positive or zero")
     @NotNull
     @Column(name = "PRICE", nullable = false)
     protected BigDecimal price;
@@ -73,7 +75,7 @@ public class Product extends StandardEntity {
 
     @PostConstruct
     public void postConstruct() {
-        StockItem stockItem = AppBeans.get(Metadata.class).create(StockItem.class);
+        StockItem stockItem = AppBeans.get(DataManager.class).create(StockItem.class);
         stockItem.setProduct(this);
         setStock(stockItem);
     }

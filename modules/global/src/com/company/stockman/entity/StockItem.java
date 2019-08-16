@@ -14,7 +14,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
+import javax.validation.constraints.PositiveOrZero;
 
 @NamePattern("%s: %s|product,quantity")
 @Table(name = "STOCKMAN_STOCK_ITEM", uniqueConstraints = {
@@ -30,16 +30,18 @@ public class StockItem extends StandardEntity {
     @JoinColumn(name = "PRODUCT_ID")
     protected Product product;
 
-    @NotNull
-    @Column(name = "QUANTITY", nullable = false, precision = 0, scale = 0)
-    protected BigDecimal quantity;
 
-    public BigDecimal getQuantity() {
-        return quantity;
+    @NotNull
+    @PositiveOrZero(message = "Quantity should be non negative")
+    @Column(name = "QUANTITY", nullable = false)
+    protected Integer quantity;
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 
-    public void setQuantity(BigDecimal quantity) {
-        this.quantity = quantity;
+    public Integer getQuantity() {
+        return quantity;
     }
 
     public Product getProduct() {
@@ -52,6 +54,6 @@ public class StockItem extends StandardEntity {
 
     @PostConstruct
     public void postConstruct() {
-        quantity = BigDecimal.ZERO;
+        quantity = 0;
     }
 }
